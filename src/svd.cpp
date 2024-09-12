@@ -13,7 +13,7 @@
 
 // determine, from a given input matrix X, the matrix dimensions
 // needed to store U, V and S
-void get_svd_dims(gsl_matrix *X, size_t &u1, size_t &u2, size_t &v1, size_t &v2, size_t &s1, size_t &s2) {
+void get_svd_dims(const gsl_matrix *X, size_t &u1, size_t &u2, size_t &v1, size_t &v2, size_t &s1, size_t &s2) {
   // for an DxN matrix:
   //  U is DxD
   //  S is DxN
@@ -35,7 +35,7 @@ void get_svd_dims(gsl_matrix *X, size_t &u1, size_t &u2, size_t &v1, size_t &v2,
 // the heap as required, and all of this will be cleaned up when
 // finished. For an implementation with more control over memory
 // usage, use the SVD implementation in GSL's linalg library.
-void do_svd(gsl_matrix *X, gsl_matrix *&U, gsl_matrix *&V, gsl_matrix *&S) {
+void do_svd(const gsl_matrix *X, gsl_matrix *&U, gsl_matrix *&V, gsl_matrix *&S) {
   // calculate A = X @ X^T
   // X is MxN => A is MxM
   gsl_matrix *A = gsl_matrix_alloc(X->size1, X->size1);
