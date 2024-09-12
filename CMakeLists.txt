@@ -24,9 +24,10 @@ link_directories(${PROJECT_SOURCE_DIR}/lib)
 file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cpp)
 file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.h)
 
-# add executable
+# add executables
 add_executable(svd_test svd_test.cpp ${sources} ${headers})
 target_compile_definitions(svd_test PRIVATE VERBOSE_SVD=1)
+add_executable(pca_test pca_test.cpp ${sources} ${headers})
 
 # add libraries
 find_package(GSL REQUIRED)
@@ -37,4 +38,7 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost 1.71.0 COMPONENTS iostreams system filesystem)
 include_directories(${Boost_INCLUDE_DIRS})
+
+# connect libraries to executables
 target_link_libraries(svd_test GSL::gsl GSL::gslcblas ${Boost_LIBRARIES})
+target_link_libraries(pca_test GSL::gsl GSL::gslcblas ${Boost_LIBRARIES})
