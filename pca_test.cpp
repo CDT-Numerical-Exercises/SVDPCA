@@ -54,10 +54,8 @@ int main() {
   gsl_matrix *eigenvecs = do_pca(X, centre);
 
   // scale everything to make the arrows visible
-  double scale;
   gsl_vector_view vec1 = gsl_matrix_column(eigenvecs, 0);
-  gsl_blas_ddot(&vec1.vector, &vec1.vector, &scale);
-  gsl_matrix_scale(eigenvecs, 3/sqrt(scale));
+  gsl_matrix_scale(eigenvecs, 3/gsl_vector_length(&vec1.vector));
 
   // draw the scree plot
   Gnuplot gp;
