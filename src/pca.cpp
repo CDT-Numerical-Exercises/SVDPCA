@@ -7,10 +7,11 @@
 // datapoint is formatted as a row of X. The result will be a DxD
 // matrix, where each column represents a basis vector for the
 // dataset. The centre of the data will be stored in a vector at
-// centre. Both the returned matrix and returned vector are allocated
+// centre. The eigenvalues will be stored in a vector at
+// eigenvals. The returned matrix and returned vectors are allocated
 // on the heap, and it is the responsibility of the caller to free
 // these using gsl_matrix_free and gsl_vector_free.
-gsl_matrix *do_pca(const gsl_matrix *X, gsl_vector *&centre) {
+gsl_matrix *do_pca(const gsl_matrix *X, gsl_vector *&centre, gsl_vector *&eigenvals) {
   // centre the data
   const size_t N = X->size1;
   const size_t D = X->size2;
@@ -51,8 +52,23 @@ gsl_matrix *do_pca(const gsl_matrix *X, gsl_vector *&centre) {
   // rather than S@V, we want (S@V)^T = V^T@S^T
   gsl_matrix *eigenvecs = gsl_matrix_alloc(D, D);
   gsl_blas_dgemm(CblasTrans, CblasTrans, 1, V, S, 0, eigenvecs);
-  gsl_matrix_free(S);
   gsl_matrix_free(V);
 
+  // copy the eigenvalues to the output vector -- we cannot simply
+  // return the view, as S will go out of scope and we will have no
+  // way of freeing it
+  eigenvals = gsl_vector_alloc(s->size);
+  gsl_vector_memcpy(eigenvals, s);
+  gsl_matrix_free(S);
+
+  return eigenvecs;
+}
+
+// provided for compatibility with earlier code
+gsl_matrix *do_pca(const gsl_matrix *X, gsl_vector *&centre) {
+  gsl_vector *eigenvals;
+  gsl_matrix *eigenvecs = do_pca(X, centre, eigenvals);
+  // discard the unwanted eigenvals
+  gsl_vector_free(eigenvals);
   return eigenvecs;
 }

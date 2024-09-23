@@ -5,5 +5,6 @@
 #include <gsl/gsl_vector.h>
 
 gsl_matrix *do_pca(const gsl_matrix *X, gsl_vector *&centre);
+gsl_matrix *do_pca(const gsl_matrix *X, gsl_vector *&centre, gsl_vector *&eigenvals);
 
 #endif
