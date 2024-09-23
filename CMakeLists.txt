@@ -29,9 +29,11 @@ add_executable(svd_test svd_test.cpp ${sources} ${headers})
 target_compile_definitions(svd_test PRIVATE VERBOSE_SVD=1)
 add_executable(pca_test pca_test.cpp ${sources} ${headers})
 add_executable(problem1 problem1.cpp ${sources} ${headers})
+add_executable(problem2 problem2.cpp ${sources} ${headers})
 
 # copy runtime dependencies
 configure_file(svdpca-problem1-data.csv svdpca-problem1-data.csv COPYONLY)
+configure_file(Faces.png Faces.png COPYONLY)
 
 # add libraries
 find_package(GSL REQUIRED)
@@ -47,3 +49,4 @@ include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(svd_test GSL::gsl GSL::gslcblas ${Boost_LIBRARIES})
 target_link_libraries(pca_test GSL::gsl GSL::gslcblas ${Boost_LIBRARIES})
 target_link_libraries(problem1 GSL::gsl GSL::gslcblas ${Boost_LIBRARIES})
+target_link_libraries(problem2 GSL::gsl GSL::gslcblas ${Boost_LIBRARIES})
