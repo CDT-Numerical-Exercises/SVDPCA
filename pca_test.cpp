@@ -57,7 +57,7 @@ int main() {
   gsl_vector_view vec1 = gsl_matrix_column(eigenvecs, 0);
   gsl_matrix_scale(eigenvecs, 3/gsl_vector_length(&vec1.vector));
 
-  // draw the scree plot
+  // draw the vectors
   Gnuplot gp;
   gp << "set xrange [-8:8]\nset yrange [-8:8]\n";
   gp << "set size square\n";
