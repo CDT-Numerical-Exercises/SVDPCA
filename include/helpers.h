@@ -53,9 +53,7 @@ template double norm(const double, const double);
 double any_random_real();
 
 inline double gsl_vector_length(const gsl_vector *v) {
-  double l;
-  gsl_blas_ddot(v, v, &l);
-  return sqrt(l);
+  return gsl_blas_dnrm2(v);
 }
 
 #endif
