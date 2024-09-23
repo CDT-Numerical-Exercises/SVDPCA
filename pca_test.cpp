@@ -50,12 +50,26 @@ gsl_matrix *gen_test_data(const int points) {
 int main() {
   gsl_matrix *X = gen_test_data(2000);
 
-  gsl_vector *centre;
-  gsl_matrix *eigenvecs = do_pca(X, centre);
+  gsl_vector *centre, *eigenvals;
+  gsl_matrix *eigenvecs = do_pca(X, centre, eigenvals);
+
+  // scale the eigenvectors by S
+  // I'm using GSL 2.5, so gsl_matrix_scale_columns is not available.
+  // we can construct a matrix as diag(eigenvals) and multiply by it
+  gsl_matrix *scaled_vecs = gsl_matrix_alloc(eigenvecs->size1, eigenvecs->size2);
+  gsl_matrix *S = gsl_matrix_calloc(eigenvals->size, eigenvals->size);
+  gsl_vector_view s_view = gsl_matrix_diagonal(S);
+  gsl_vector_memcpy(&s_view.vector, eigenvals);
+  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1, eigenvecs, S, 0, scaled_vecs);
+
+  // free up the bits we no longer care about
+  gsl_matrix_free(eigenvecs);
+  gsl_matrix_free(S);
+  gsl_vector_free(eigenvals);
 
   // scale everything to make the arrows visible
-  gsl_vector_view vec1 = gsl_matrix_column(eigenvecs, 0);
-  gsl_matrix_scale(eigenvecs, 3/gsl_vector_length(&vec1.vector));
+  gsl_vector_view vec1 = gsl_matrix_column(scaled_vecs, 0);
+  gsl_matrix_scale(scaled_vecs, 3/gsl_vector_length(&vec1.vector));
 
   // draw the vectors
   Gnuplot gp;
@@ -64,16 +78,16 @@ int main() {
   gp << "set style arrow 2 front lc 'red' lw 4\n";
   gp << "set style arrow 1 front lc 'blue' lw 4\n";
   
-  gsl_vector *endpoint = gsl_vector_alloc(eigenvecs->size1);
-  for (int col = 0; col < eigenvecs->size2; ++col) {
-    gsl_vector_view eigenvec = gsl_matrix_column(eigenvecs, col);
+  gsl_vector *endpoint = gsl_vector_alloc(scaled_vecs->size1);
+  for (int col = 0; col < scaled_vecs->size2; ++col) {
+    gsl_vector_view eigenvec = gsl_matrix_column(scaled_vecs, col);
     gsl_vector_memcpy(endpoint, centre);
     gsl_vector_add(endpoint, &eigenvec.vector);
     gp << "set arrow as " << col+1 << " from " << gsl_vector_get(centre, 0) << "," << gsl_vector_get(centre, 1);
     gp << " to " << gsl_vector_get(endpoint, 0) << "," << gsl_vector_get(endpoint, 1) << "\n";
   }
   gsl_vector_free(endpoint);
-  gsl_matrix_free(eigenvecs);
+  gsl_matrix_free(scaled_vecs);
   gsl_vector_free(centre);
 
   gp << "plot '-' with points pt 7\n";
