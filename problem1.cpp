@@ -24,6 +24,9 @@ int main() {
   gsl_vector *centre, *eigenvals;
   gsl_matrix *eigenvecs = do_pca(X, centre, eigenvals);
 
+  // we're done with the actual data now, so we can free it
+  gsl_matrix_free(X);
+
   // turn the eigenvals into percentages of the variance
   double s2_sum = 0;
   for (int i = 0; i < eigenvals->size; ++i) {
@@ -49,4 +52,9 @@ int main() {
     double s = gsl_vector_get(eigenvals, i);
     gp << i << " " << s*s/s2_sum << "\n";
   }
+
+  // clean up
+  gsl_matrix_free(eigenvecs);
+  gsl_vector_free(centre);
+  gsl_vector_free(eigenvals);
 }
