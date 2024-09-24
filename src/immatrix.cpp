@@ -68,6 +68,10 @@ bool save_matrix_to_image(gsl_matrix *immatrix, std::filesystem::path imfile) {
   int outcode = 0;
   if (ext == ".PNG") {
     outcode = stbi_write_png(fn.c_str(), w, h, comp, data, 0);
+  } else if (ext == ".JPG") {
+    outcode = stbi_write_jpg(fn.c_str(), w, h, comp, data, 100);
+  } else if (ext == ".BMP") {
+    outcode = stbi_write_bmp(fn.c_str(), w, h, comp, data);
   } else {
     return false;
   }
