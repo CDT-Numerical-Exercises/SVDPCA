@@ -23,6 +23,10 @@ int main() {
 
   gsl_vector *centre, *eigenvals;
   gsl_matrix *eigenvecs = do_pca(X, RowVector, centre, eigenvals);
+  if (eigenvecs == NULL) {
+    std::cout << "PCA failed" << std::endl;
+    return -1;
+  }
 
   // we're done with the actual data now, so we can free it
   gsl_matrix_free(X);
