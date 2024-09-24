@@ -59,6 +59,7 @@ int main() {
   }
 
   // dealloc the original matrix now, since it's redundant
+  // im_matrix_view and im_matrix are now dead
   gsl_matrix_free(im_matrix_raw);
 
   // do the principle component analysis
@@ -66,6 +67,10 @@ int main() {
   // the mean vector!
   gsl_vector *centre, *eigenvals;
   gsl_matrix *eigenvecs = do_pca(X, ColumnVector, centre, eigenvals);
+  if (eigenvecs == NULL) {
+    std::cout << "PCA failed" << std::endl;
+    return -1;
+  }
 
   std::cout << "Got " << eigenvecs->size2 << " eigenvecs of length " << eigenvecs->size1 << std::endl;
   std::cout << "Got " << eigenvals->size << " eigenvalues" << std::endl;

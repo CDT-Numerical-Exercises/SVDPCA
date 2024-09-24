@@ -53,6 +53,10 @@ int main() {
 
   gsl_vector *centre, *eigenvals;
   gsl_matrix *eigenvecs = do_pca(X, RowVector, centre, eigenvals);
+  if (eigenvecs == NULL) {
+    std::cout << "PCA failed" << std::endl;
+    return -1;
+  }
   std::cout << "Centre: ";
   print_vector(centre);
   print_matrix(eigenvecs);
