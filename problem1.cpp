@@ -22,7 +22,7 @@ int main() {
   gsl_matrix *X = load_csv_to_dmatrix("svdpca-problem1-data.csv");
 
   gsl_vector *centre, *eigenvals;
-  gsl_matrix *eigenvecs = do_pca(X, centre, eigenvals);
+  gsl_matrix *eigenvecs = do_pca(X, RowVector, centre, eigenvals);
 
   // we're done with the actual data now, so we can free it
   gsl_matrix_free(X);
