@@ -68,6 +68,7 @@ int main() {
   gsl_matrix *eigenvecs = do_pca(X, ColumnVector, centre, eigenvals);
 
   std::cout << "Got " << eigenvecs->size2 << " eigenvecs of length " << eigenvecs->size1 << std::endl;
+  std::cout << "Got " << eigenvals->size << " eigenvalues" << std::endl;
   std::cout << "Centre length: " << centre->size << std::endl;
   std::cout << "Centre max: " << gsl_vector_max(centre) << std::endl;
   std::cout << "Centre min: " << gsl_vector_min(centre) << std::endl;
