@@ -5,5 +5,6 @@
 #include <filesystem>
 
 bool load_channel_to_matrix(gsl_matrix *&out, std::filesystem::path imfile, int channel);
+bool save_matrix_to_image(gsl_matrix *immatrix, std::filesystem::path imfile);
 
 #endif 

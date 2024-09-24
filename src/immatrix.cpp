@@ -1,8 +1,11 @@
 #include <filesystem>
+#include <algorithm>
 #include "immatrix.h"
 #include "gsl/gsl_matrix.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb/stb_image_write.h"
 
 bool load_channel_to_matrix(gsl_matrix *&out, std::filesystem::path imfile, int channel) {
   // get the details of the image
@@ -19,7 +22,7 @@ bool load_channel_to_matrix(gsl_matrix *&out, std::filesystem::path imfile, int 
   }
 
   // load the full image as a heap-allocated float array
-  float *im_array = stbi_loadf(filename, &x, &y, &n, n);
+  unsigned char *im_array = stbi_load(filename, &x, &y, &n, n);
 
   // copy the contents into a matrix
   // I don't think there's any clever way of doing this in GSL as the
@@ -32,12 +35,44 @@ bool load_channel_to_matrix(gsl_matrix *&out, std::filesystem::path imfile, int 
       //  i,j=0 -> 4*0 + c
       //  i=0, j=1 -> 4*1 + c
       //  i=1, j=0 -> 4*width + c
-      gsl_matrix_set(out, i, j, im_array[n*(x*i + j) + channel]);
+      gsl_matrix_set(out, i, j, im_array[n*(x*i + j) + channel]/255.);
     }
   }
 
   // free stb's version of the image
   stbi_image_free(im_array);
+
+  return true;
+}
+
+bool save_matrix_to_image(gsl_matrix *immatrix, std::filesystem::path imfile) {
+  const int w = immatrix->size2;
+  const int h = immatrix->size1;
+  const int comp = 1;
+
+  // convert the matrix to an array
+  // we need to do this manually as we have to convert from float to char
+  unsigned char *data = new unsigned char[w*h];
+  for (int i = 0; i < h; ++i) {
+    for (int j = 0; j < w; ++j) {
+      const int pixel = w*i + j;
+      data[pixel] = (unsigned char)(255*gsl_matrix_get(immatrix, i, j));
+    }
+  }
+
+  std::string ext = imfile.extension();
+  // convert to uppercase
+  std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+
+  std::string fn = imfile.string();
+  int outcode = 0;
+  if (ext == ".PNG") {
+    outcode = stbi_write_png(fn.c_str(), w, h, comp, data, 0);
+  } else {
+    return false;
+  }
+
+  delete[] data;
 
   return true;
 }
