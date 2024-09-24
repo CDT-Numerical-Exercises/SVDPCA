@@ -14,7 +14,8 @@
 gsl_matrix *gen_test_data(const int points) {
   constexpr double means[2] = {0, 0};
   constexpr double stddevs[2] = {1, 2};
-  // data is generated as row vectors to make it easier to apply SVD
+  // each datum (x,y) is stored as a row to make it easier to apply
+  // SVD
   gsl_matrix *M = gsl_matrix_alloc(points, 2);
   for (int i = 0; i < M->size1; ++i) {
     for (int j = 0; j < 2; ++j) {
@@ -26,7 +27,7 @@ gsl_matrix *gen_test_data(const int points) {
   // ordinarily, we would do X' = R@X
   // this assumes X uses column vectors
   // we must instead do X' = X@R^T
-  const double theta = M_PI/4;
+  const double theta = M_PI/4+M_PI/8;
   double R_data[4] = {
     cos(theta), sin(theta),
     -sin(theta), cos(theta)
@@ -51,7 +52,8 @@ int main() {
   gsl_matrix *X = gen_test_data(2000);
 
   gsl_vector *centre, *eigenvals;
-  gsl_matrix *eigenvecs = do_pca(X, centre, eigenvals);
+  gsl_matrix *eigenvecs = do_pca(X, RowVector, centre, eigenvals);
+  print_matrix(eigenvecs);
 
   // scale the eigenvectors by S
   // I'm using GSL 2.5, so gsl_matrix_scale_columns is not available.
