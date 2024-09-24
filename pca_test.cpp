@@ -53,6 +53,8 @@ int main() {
 
   gsl_vector *centre, *eigenvals;
   gsl_matrix *eigenvecs = do_pca(X, RowVector, centre, eigenvals);
+  std::cout << "Centre: ";
+  print_vector(centre);
   print_matrix(eigenvecs);
 
   // scale the eigenvectors by S
