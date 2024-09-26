@@ -10,5 +10,6 @@ enum DataFormat {
 };
 
 gsl_matrix *do_pca(const gsl_matrix *X, DataFormat format, gsl_vector *&centre, gsl_vector *&eigenvals);
+gsl_vector *pca_project(const gsl_matrix *eigenvecs, const gsl_vector *X, const int dims);
 
 #endif
