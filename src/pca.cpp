@@ -17,7 +17,7 @@
 // The returned matrix and returned vectors are allocated on the heap,
 // and it is the responsibility of the caller to free these using
 // gsl_matrix_free and gsl_vector_free.
-gsl_matrix *do_pca(const gsl_matrix *X, DataFormat format, gsl_vector *&centre, gsl_vector *&eigenvals) {
+gsl_matrix *do_pca(const gsl_matrix *X, const DataFormat format, gsl_vector *&centre, gsl_vector *&eigenvals) {
   // set the right variables dependent on the format
   const size_t N = X->size1;
   const size_t D = X->size2;
