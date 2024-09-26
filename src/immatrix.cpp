@@ -7,7 +7,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
 
-bool load_channel_to_matrix(gsl_matrix *&out, std::filesystem::path imfile, int channel) {
+bool load_channel_to_matrix(gsl_matrix *&out, const std::filesystem::path imfile, const int channel) {
   // get the details of the image
   // we can use this to verify the choice of channel
   int x,y,n,ok;
@@ -45,7 +45,7 @@ bool load_channel_to_matrix(gsl_matrix *&out, std::filesystem::path imfile, int 
   return true;
 }
 
-bool save_matrix_to_image(gsl_matrix *immatrix, std::filesystem::path imfile) {
+bool save_matrix_to_image(const gsl_matrix *immatrix, const std::filesystem::path imfile) {
   const int w = immatrix->size2;
   const int h = immatrix->size1;
   const int comp = 1;
@@ -64,7 +64,7 @@ bool save_matrix_to_image(gsl_matrix *immatrix, std::filesystem::path imfile) {
   // convert to uppercase
   std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
 
-  std::string fn = imfile.string();
+  const std::string fn = imfile.string();
   int outcode = 0;
   if (ext == ".PNG") {
     outcode = stbi_write_png(fn.c_str(), w, h, comp, data, 0);
