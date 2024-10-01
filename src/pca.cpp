@@ -89,15 +89,22 @@ gsl_matrix *do_pca(const gsl_matrix *X, const DataFormat format, gsl_vector *&ce
 // reduce its dimensionality. The eigenvectors should be stored as
 // column vectors. Returns a heap-allocated vector, which must be
 // freed by the caller.
-gsl_vector *pca_project(const gsl_matrix *eigenvecs, const gsl_vector *X, const int dims) {
+gsl_vector *pca_project(const gsl_matrix *eigenvecs, const gsl_vector *Xc, const int dims) {
   const gsl_matrix_const_view reduced = gsl_matrix_const_submatrix(eigenvecs, 0, 0, eigenvecs->size1, dims);
   const gsl_matrix *U = &reduced.matrix;
 
   // allocate the return vector
-  gsl_vector *X_p = gsl_vector_alloc(dims);
+  // this tells us the proportions of each eigenvector
+  gsl_vector *A = gsl_vector_alloc(U->size2);
 
   // go go gadget BLAS
-  gsl_blas_dgemv(CblasTrans, 1, U, X, 0, X_p);
+  gsl_blas_dgemv(CblasTrans, 1, U, Xc, 0, A);
+
+  // calculate the projection
+  gsl_vector *X_p = gsl_vector_alloc(Xc->size);
+  gsl_blas_dgemv(CblasNoTrans, 1, U, A, 0, X_p);
+
+  gsl_vector_free(A);
 
   return X_p;
 }
