@@ -79,4 +79,56 @@ int main() {
   std::cout << "Centre min: " << gsl_vector_min(centre) << std::endl;
   // save the mean vector as an image
   write_image("x0.png", centre, SUBIM_WIDTH, SUBIM_HEIGHT);
+
+  // create the scree plot
+  double s2_sum = 0;
+  for (int i = 0; i < eigenvals->size; ++i) {
+    const double s = gsl_vector_get(eigenvals, i);
+    s2_sum += s*s;
+  }
+  Gnuplot gp;
+  gp << "plot '-' using 1:2 with linespoints title 'eigenval', '-' using 1:3 with linespoints title 'cumulative'\n";
+  for (int j = 0; j < 2; ++j) {
+    double running = 0.0;
+    for (int i = 0; i < eigenvals->size; ++i) {
+      const double s = gsl_vector_get(eigenvals, i);
+      const double pc = s * s / s2_sum;
+      running += pc;
+      gp << i << " " << pc << " " << running << "\n";
+    }
+    gp << "E\n";
+  }
+
+  // create projections of the faces and export them
+  const int dims[2] = { 5, 10 };
+  constexpr int len = sizeof(dims)/sizeof(dims[0]);
+  constexpr int bufsize = 100;
+  char buf[bufsize];
+  for (int i = 0; i < len; ++i) {
+    const int D = dims[i];
+    std::cout << D << std::endl;
+    for (int face = 0; face < X->size2; ++face) {
+      gsl_vector_view view = gsl_matrix_column(X, face);
+      // centre the data
+      gsl_vector *Xc = gsl_vector_alloc(view.vector.size);
+      gsl_vector_memcpy(Xc, &view.vector);
+      gsl_vector_sub(Xc, centre);
+
+      // find the projection
+      gsl_vector *proj = pca_project(eigenvecs, Xc, D);
+      gsl_vector_add(proj, centre);
+
+      // output
+      snprintf(buf, bufsize, "face%d_%d.png", face, D);
+      write_image(buf, proj, SUBIM_WIDTH, SUBIM_HEIGHT);
+      gsl_vector_free(proj);
+      gsl_vector_free(Xc);
+      std::cout << "Reduced face " << face << " to " << D << " dimensions" << std::endl;
+    }
+  }
+
+  gsl_vector_free(centre);
+  gsl_matrix_free(eigenvecs);
+  gsl_vector_free(eigenvals);
+  gsl_matrix_free(X);
 }
