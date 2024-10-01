@@ -1,5 +1,9 @@
 # SVD and PCA 
 
+## Additional Build Requirements
+
+Ensure the `Faces.png` file has been placed in the root of the repo. This has not been included in this repo for data protection reasons.
+
 ## Supplementary Elements
 
 ### Problem 1
