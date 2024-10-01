@@ -7,6 +7,12 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
 
+double clamp(double x, double min, double max) {
+  if (x < min) return min;
+  if (x > max) return max;
+  return x;
+}
+
 bool load_channel_to_matrix(gsl_matrix *&out, const std::filesystem::path imfile, const int channel) {
   // get the details of the image
   // we can use this to verify the choice of channel
@@ -56,7 +62,7 @@ bool save_matrix_to_image(const gsl_matrix *immatrix, const std::filesystem::pat
   for (int i = 0; i < h; ++i) {
     for (int j = 0; j < w; ++j) {
       const int pixel = w*i + j;
-      data[pixel] = (unsigned char)(255*gsl_matrix_get(immatrix, i, j));
+      data[pixel] = (unsigned char)(255*clamp(gsl_matrix_get(immatrix, i, j), 0, 1));
     }
   }
 
