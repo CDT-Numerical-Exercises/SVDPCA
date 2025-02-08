@@ -57,8 +57,9 @@ int main() {
   gp << "e\n";
   }
 
-  Gnuplot gp;
   // project each datum into 2D and plot it
+  Gnuplot gp;
+  gp << "set size ratio -1\n";
   gp << "plot '-' with points\n";
   // we want to keep the first two eigenvectors
   for (int i = 0; i < X->size1; ++i) {
