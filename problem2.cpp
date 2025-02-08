@@ -115,7 +115,7 @@ int main() {
       gsl_vector_sub(Xc, centre);
 
       // find the projection
-      gsl_vector *proj = pca_project(eigenvecs, Xc, D);
+      gsl_vector *proj = pca_reconstruct(eigenvecs, Xc, D);
       gsl_vector_add(proj, centre);
 
       // output

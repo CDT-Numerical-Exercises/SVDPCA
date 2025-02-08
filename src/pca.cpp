@@ -100,7 +100,20 @@ gsl_vector *pca_project(const gsl_matrix *eigenvecs, const gsl_vector *Xc, const
   // go go gadget BLAS
   gsl_blas_dgemv(CblasTrans, 1, U, Xc, 0, A);
 
-  // calculate the projection
+  return A;
+}
+
+// Using a complete set of PCA eigenvectors, project the data X to
+// reduce its dimensionality, then reconstruct the original
+// dimensionality from the eigenvectors. Returns a heap-allocated
+// vector, which must be freed by the caller.
+gsl_vector *pca_reconstruct(const gsl_matrix *eigenvecs, const gsl_vector *Xc,
+                            const int dims) {
+  const gsl_matrix_const_view reduced = gsl_matrix_const_submatrix(eigenvecs, 0, 0, eigenvecs->size1, dims);
+  const gsl_matrix *U = &reduced.matrix;
+  gsl_vector *A = pca_project(eigenvecs, Xc, dims);
+  
+  // calculate the reconstruction
   gsl_vector *X_p = gsl_vector_alloc(Xc->size);
   gsl_blas_dgemv(CblasNoTrans, 1, U, A, 0, X_p);
 
