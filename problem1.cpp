@@ -28,9 +28,6 @@ int main() {
     return -1;
   }
 
-  // we're done with the actual data now, so we can free it
-  gsl_matrix_free(X);
-
   // turn the eigenvals into percentages of the variance
   double s2_sum = 0;
   for (int i = 0; i < eigenvals->size; ++i) {
@@ -50,14 +47,44 @@ int main() {
   }
 
   // plot the scree plot
+  {
   Gnuplot gp;
   gp << "plot '-' with linespoints\n";
   for (int i = 0; i < eigenvals->size; ++i) {
     double s = gsl_vector_get(eigenvals, i);
-    gp << i << " " << s*s/s2_sum << "\n";
+    gp << i << " " << s * s / s2_sum << "\n";
+  }
+  gp << "e\n";
   }
 
+  Gnuplot gp;
+  // project each datum into 2D and plot it
+  gp << "plot '-' with points\n";
+  // we want to keep the first two eigenvectors
+  for (int i = 0; i < X->size1; ++i) {
+    // centre the datum
+    const gsl_vector_view row = gsl_matrix_row(X, i);
+    gsl_vector *Xc = gsl_vector_alloc(X->size2);
+    gsl_vector_memcpy(Xc, &row.vector);
+    gsl_vector_sub(Xc, centre);
+
+    // find the projection
+    gsl_vector *proj = pca_project(eigenvecs, Xc, KEEP_COMPONENTS);
+
+    // output
+    for (int j = 0; j < proj->size - 1; ++j) {
+      gp << gsl_vector_get(proj, j) << " ";
+    }
+    gp << gsl_vector_get(proj, proj->size-1) << "\n";
+
+    // clean up
+    gsl_vector_free(proj);
+    gsl_vector_free(Xc);
+  }
+  gp << "e\n";
+
   // clean up
+  gsl_matrix_free(X);
   gsl_matrix_free(eigenvecs);
   gsl_vector_free(centre);
   gsl_vector_free(eigenvals);
