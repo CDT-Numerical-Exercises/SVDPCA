@@ -14,12 +14,17 @@
 
 constexpr int KEEP_COMPONENTS = 2;
 
-int main() {
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    std::cerr << "Requires path to CSV file as arg." << std::endl;
+    return 1;
+  }
+
   // data is stored as row vectors, i.e.
   //   [x0, x1, x2...]
   //   [x0, x1, x2...]
   // which is the format we need
-  gsl_matrix *X = load_csv_to_dmatrix("svdpca-problem1-data.csv");
+  gsl_matrix *X = load_csv_to_dmatrix(argv[1]);
 
   gsl_vector *centre, *eigenvals;
   gsl_matrix *eigenvecs = do_pca(X, RowVector, centre, eigenvals);

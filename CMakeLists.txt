@@ -33,10 +33,6 @@ endif()
 add_executable(problem1 problem1.cpp ${sources} ${headers})
 add_executable(problem2 problem2.cpp ${sources} ${headers})
 
-# copy runtime dependencies
-configure_file(svdpca-problem1-data.csv svdpca-problem1-data.csv COPYONLY)
-configure_file(Faces.png Faces.png COPYONLY)
-
 # add libraries
 find_package(GSL REQUIRED)
 

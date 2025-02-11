@@ -25,9 +25,14 @@ void write_image(std::filesystem::path out_file, gsl_vector *flat, int width, in
   save_matrix_to_image(&view.matrix, out_file);
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    std::cerr << "Requires path to Faces.png file as arg." << std::endl;
+    return 1;
+  }
+
   gsl_matrix *im_matrix_raw;
-  if (!load_channel_to_matrix(im_matrix_raw, "Faces.png", 0)) {
+  if (!load_channel_to_matrix(im_matrix_raw, argv[1], 0)) {
     std::cout << "Error loading image file!" << std::endl;
     return -1;
   }
