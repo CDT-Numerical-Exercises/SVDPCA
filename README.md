@@ -6,10 +6,6 @@ GSL's SVD implementation requires the matrix have at least as many rows as colum
 
 Since the two representations are just transposes of each other, the SVD equations can be rearranged, and we find the result is that it swaps U and V; U contains the eigenvectors when using row vectors, V contains the eigenvectors when using column vectors. We just need to make sure we return the right one dependent on which format we are forced to use.
 
-## Additional Build Requirements
-
-Ensure the `Faces.png` file has been placed in the root of the repo. This has not been included in this repo for data protection reasons.
-
 ## Problem 1
 
 ```
